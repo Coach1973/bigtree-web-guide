@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大樹教練製作網頁的綜合指令集</title>
+<meta name="description" content="個人品牌、課程活動、協會網站都用同一行指令；TAVA AI 與 MUSE 自己判斷該怎麼做。">
+<style>
+  :root{--bg:#fbf6ec;--ink:#2b2118;--sub:#6b5a48;--main:#2f6b3a;--accent:#c8731e;--line:#e3d5bf;--card:#fffdf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:22px/1.75 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;overflow-x:clip}
+  main{max-width:900px;margin:0 auto;padding:36px 18px 48px}
+  h1{font-size:38px;line-height:1.3;margin:0 0 10px;color:var(--main)}
+  h2{font-size:28px;margin:40px 0 12px;color:var(--main)}
+  p,li{font-size:22px}
+  .sub{color:var(--sub)}
+  .box{background:var(--card);border:3px solid var(--main);border-radius:18px;padding:20px}
+  .cmd{font-size:22px;white-space:pre-wrap;word-break:break-all;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:14px;margin:0 0 14px}
+  button{font:inherit;font-size:22px;background:var(--main);color:#fff;border:0;border-radius:999px;padding:12px 30px;cursor:pointer;min-height:52px}
+  button:active{transform:scale(.98)}
+  .ok{color:var(--main);font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card b{color:var(--accent);font-size:23px}
+  .tip{background:#fff3df;border-left:6px solid var(--accent);border-radius:10px;padding:14px 18px}
+  ol,ul{padding-left:1.4em}
+  a{color:var(--main)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}
+  td{border-bottom:1px solid var(--line);padding:10px 12px;font-size:21px;vertical-align:top}
+  td:first-child{white-space:nowrap;font-weight:700}
+  footer{margin-top:52px;border-top:1px solid var(--line);padding-top:16px;font-size:20px;color:var(--sub)}
+  footer a,footer span{display:block;font-size:20px}
+</style>
+</head>
+<body>
+<main>
+  <h1>大樹教練製作網頁的綜合指令集</h1>
+  <p class="sub">個人品牌網頁、課程活動網頁、協會網站，都用同一行。TAVA AI 和 MUSE 都能讀，它們自己判斷「我是誰」和「這次做哪一種」，照各自的方式做到交付。</p>
+
+  <h2>① 複製這一行，後面接這次的資料</h2>
+  <div class="box">
+    <p class="cmd" id="cmd">請完整讀完這份入口指令再照做（自己判斷你是 TAVA 還是 MUSE、這次做哪一種網頁）：https://coach1973.github.io/bigtree-web-guide/go.txt ｜這次的資料：</p>
+    <button type="button" id="copy">複製指令</button>
+    <span id="ok" class="ok" hidden>　已複製 ✓</span>
+  </div>
+  <p class="sub">「這次的資料：」後面貼上人名＋連結、課程的日期地點費用講師，或協會名稱＋理事長就好；資料越多越準。</p>
+  <p class="tip">要做<b>官方網站</b>或<b>線上課程（學員登入看影片）</b>，請在資料裡直接寫「做官方網站」或「做線上課程」。沒寫，AI 就不會去讀那兩份，平常省 token、也不分心。</p>
+
+  <h2>② 教練接下來只要做這幾步</h2>
+  <div class="grid">
+    <div class="card"><b>用 TAVA 做</b><ol><li>下載 TAVA 給的 ZIP</li><li>上傳到策展中心</li><li>把出圖清單交給小龍蝦出圖，圖會照編號自動換進網頁</li></ol></div>
+    <div class="card"><b>用 MUSE 做</b><ol><li>下載 MUSE 給的 ZIP（圖已經放好）</li><li>上傳到策展中心 → 結束</li></ol><p class="sub">之後要改：叫 MUSE 寫成「修改指令」，交給小龍蝦或 Claude Code 去改。</p></div>
+  </div>
+
+  <h2>AI 怎麼分辨（回覆第一行會寫「判定：……」）</h2>
+  <table>
+    <tr><td>我是誰</td><td>確定自己是 MUSE → 自己出圖、一次做完。其他情況（TAVA，或不確定）一律當 TAVA → 不生圖，只寫出圖清單交給 LK888，避免誤扣點。</td></tr>
+    <tr><td>C 協會網站</td><td>主角是協會、學會、商會等組織（有理事長、理監事、會員、入會）。</td></tr>
+    <tr><td>B 課程活動</td><td>資料裡有日期、時間、地點、費用、名額、報名其中兩項以上。協會辦的一場活動也算 B。</td></tr>
+    <tr><td>A 個人品牌</td><td>主要是一個人，沒有要報名的場次。</td></tr>
+  </table>
+  <p class="sub">判斷錯了，直接跟它說「改做 A／B／C」或「你是 MUSE」。資料裡寫明的，以您寫的為準。</p>
+
+  <h2>選配 SOP（明講才讀）</h2>
+  <div class="grid">
+    <div class="card"><b>官方網站</b><br>品牌總站：網站地圖串起所有服務、行事曆、創辦人。範本：結繩領導學官方網站。<br><a href="opt-official-site.txt" target="_blank" rel="noopener">看 SOP</a></div>
+    <div class="card"><b>線上課程</b><br>課程介紹頁＋購課登記＋教練手動開通＋學員登入看影片。範本：傘繩線上課程。<br><a href="opt-online-course.txt" target="_blank" rel="noopener">看 SOP</a></div>
+  </div>
+
+  <h2>指令集裡有哪些檔案</h2>
+  <ul>
+    <li><a href="go.txt" target="_blank" rel="noopener">入口</a>：判定＋所有網頁共用的規則（每次都讀）</li>
+    <li><a href="a-brand.txt" target="_blank" rel="noopener">A 個人品牌</a>、<a href="b-course.txt" target="_blank" rel="noopener">B 課程活動</a>、<a href="c-assoc.txt" target="_blank" rel="noopener">C 協會網站</a>（三選一）</li>
+    <li><a href="effects.txt" target="_blank" rel="noopener">28 招特效庫</a>（挑特效時才讀；<a href="https://event.bymyway.com/curated/rs-demo/" target="_blank" rel="noopener">示範頁</a>）</li>
+    <li><a href="deliver-tava.txt" target="_blank" rel="noopener">TAVA 交付方式</a>、<a href="deliver-muse.txt" target="_blank" rel="noopener">MUSE 交付方式</a>（二選一）</li>
+  </ul>
+  <p class="sub">每次 AI 先讀「入口＋一種網頁＋自己的交付方式」（約一萬字，是以前 MUSE 總指令的一半），做到挑特效時才讀特效庫；分段讀、每段只放這次用得到的，比較不會漏。圖片一律壓到單張 300KB 以下（網頁用；印刷另外定）。</p>
+
+  <h2>舊版指令（已整合進這一份，先保留）</h2>
+  <ul>
+    <li><a href="https://coach1973.github.io/tava-brand-web-playbook/" target="_blank" rel="noopener">TAVA 個人行銷／品牌網頁</a></li>
+    <li><a href="https://coach1973.github.io/course-signup-playbook/" target="_blank" rel="noopener">TAVA 課程推廣報名網頁</a></li>
+    <li><a href="https://coach1973.github.io/association-site-playbook/" target="_blank" rel="noopener">TAVA 協會官網</a></li>
+    <li><a href="https://coach1973.github.io/tava-to-claude/muse.html" target="_blank" rel="noopener">MUSE 一行指令</a></li>
+  </ul>
+
+  <footer>
+    <span>本網頁由 Claude AI 製作</span>
+    <a href="https://www.bymyway.com/" target="_blank" rel="noopener">出品人 大樹教練</a>
+    <a href="https://event.bymyway.com/curated/rongtree/" target="_blank" rel="noopener">友善連結 榮樹下</a>
+    <a href="https://event.bymyway.com/curated/skyteam/" target="_blank" rel="noopener">顧問師天團・人才軍火庫</a>
+  </footer>
+</main>
+<script>
+document.getElementById('copy').addEventListener('click', function () {
+  var t = document.getElementById('cmd').textContent;
+  var done = function () { var ok = document.getElementById('ok'); ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 2000); };
+  function fallback() { var a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); done(); } catch (e) {} a.remove(); }
+  if (navigator.clipboard) { navigator.clipboard.writeText(t).then(done, fallback); } else { fallback(); }
+});
+</script>
+</body>
+</html>

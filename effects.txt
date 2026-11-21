@@ -1,0 +1,107 @@
+【特效庫｜28 招】大樹教練製作網頁的綜合指令集
+網址：https://coach1973.github.io/bigtree-web-guide/effects.txt
+（做到挑特效那一步再讀。C 協會網站比照 B 課程活動的用法；完整做法與原理另見反向技能書 https://event.bymyway.com/curated/reverse-skill/ ）
+28 招特效庫（照這個網頁的需要挑著用；示範頁：https://event.bymyway.com/curated/rs-demo/ ）
+════════════════════════════════════
+教練要求：特效是工具箱，不是清單。依這個網頁的內容、對象和調性，挑最適合的 3～8 招用上，沒有用處的招式就不要放，不准為了湊數硬塞。
+挑法：先想「這個區塊要讓看的人感覺到什麼」，再看哪一招做得到；沒有適合的招式，這個區塊就樸素地做好，也是對的。下面每一招都寫了「適合用在哪裡」和「怎麼做」，只供參考與實作用。
+・第 ①② 招需要影片：能做出 5～8 秒的影片才用；做不出來就不用，需要開場時改用第 ⑧ 招的縮框開場。
+・第 ⑮ 招只在有兩場以上日期明確的活動／場次時才用；第 ⑯ 招只在有可分類篩選的區塊時才用；第 ⑰ 招只在教練明講要客服時才用；第 ⑱ 招要有分塊的模型圖才用；第 ㉓ 招要有後端真實累計數字才用；第 ㉔ 招要有訪客顧慮要回答時才用；第 ㉖ 招只在教練要求多語時才用；第 ㉗ 招要有可下載的東西才用；第 ㉘ 招只放在真的有「進行中／完成」狀態的地方；第 ㉒ 招要有寫日期的場次才用；第 ㉑ 招每頁都建議用；沒有就不放，不用說明。
+所有特效的共同底線：
+・prefers-reduced-motion（使用者關閉動畫）時，全部改成直接顯示最終畫面。
+・特效不准擋住內容：不捲動時內容也要看得到；開場動畫最長 3 秒、可以跳過、同一個瀏覽器只播一次。
+・手機要順：粒子背景在手機降到 30×30 或改靜態；同頁多支影片只有正在播的才載入（preload="none"＋poster）。
+・不用任何需要安裝的套件也做得出來（three.js、GSAP 這類公開套件可以用 CDN）。
+
+① 捲軸控制影片
+  適合用在哪：A 個人品牌＝開場主視覺（本人工作場景的短片）；B 課程活動＝開場主視覺（課程現場或成果的短片）
+  怎麼做：外層 height:400vh，內層 position:sticky;top:0;height:100vh。捲動時用 requestAnimationFrame 節流，算 p=(scrollY-起點)/(外層高-視窗高)，設 video.currentTime=p*(duration-0.05)，並把 p 寫進 CSS 變數 --p 控制淡入淡出與位移。
+② 影片每格都是完整畫面（搭配第 1 招）
+  怎麼做：影片 5～8 秒、寬 ≤1920、每一格都是關鍵格（例：ffmpeg -i in.mp4 -c:v libx264 -g 1 -crf 23 -pix_fmt yuv420p -movflags +faststart -an hero.mp4），來回捲才順。
+③ 數字跳動
+  適合用在哪：A 個人品牌＝次要數字（例：專欄篇數、合作單位數）；B 課程活動＝「你會帶走什麼」裡的成果數字
+  怎麼做：IntersectionObserver（threshold 0.35）觸發，1.2 秒，緩動 1-(1-k)^3。元素預設就顯示最終數字，觸發時才從 0 跳。
+④ 亮點＋雷射說明卡
+  適合用在哪：A 個人品牌＝一張代表作品照或工作現場照，標 3～5 個亮點說明他的專業；B 課程活動＝一張教室／作品照，標出「這堂課你會做到的事」
+  怎麼做：亮點座標以照片百分比儲存，依 object-fit:cover 換算成框內像素；點擊時 2px 光線從亮點水平 scaleX 展開，說明卡（毛玻璃）放右側，放不下改左側。
+⑤ 簡報筆模式
+  適合用在哪：兩種都適合。教練會拿這一頁上台講：按鍵盤方向鍵／PageDown／空白鍵一站一站捲；頁面角落放「上一站／下一站」小按鈕。
+  怎麼做：依各區塊頂端座標算停點，以 cubic in-out 平滑捲動（600～1600ms）；在亮點區先依序開亮點；滑鼠移動超過 8px 回到自由模式。
+⑥ 內容和版面分開
+  適合用在哪：兩種都適合。人物資料／課程資料（學經歷、專長、時間軸、場次、FAQ、媒體牆）放在一個資料物件，畫面由資料渲染，下次換一個人、換一堂課只要換資料。
+  底線：資料渲染失敗時也要有內容（重要文字同時寫在 HTML 裡，或渲染放在最前面同步執行）。
+⑦ 粒子波浪背景
+  適合用在哪：A 個人品牌＝重點數字區或聯絡區的背景；B 課程活動＝報名區上方或「場次與票價」的背景
+  怎麼做：50×50 網格、間距 100，高度 sin((ix+t)*0.3)*50+sin((iz+t)*0.5)*50，每幀 t+=0.1，鏡頭每幀追滑鼠 5%；顏色用這一頁的主色；手機降到 30×30 或靜態。
+⑧ 捲動縮框開場
+  適合用在哪：兩種都適合。開場滿版畫面（影片或主視覺圖）往下捲縮成圓角卡片。
+  怎麼做：影片／圖片層 transform:scale(sx,sy)＋border-radius，sx=max((寬-2×inset)/寬,.94)，inset 10（手機 14）、圓角 18（手機 22），捲 innerHeight*1.55 走完，緩動 sine.inOut，追蹤慢半拍（每幀 cur+=(目標-cur)*.18）；蓋層 border-radius:inherit。
+⑨ 滾輪數字（純 CSS）
+  適合用在哪：A 個人品牌＝重點數字區的三到四個亮眼數字；B 課程活動＝開場或講師區的數字（學員人數、開課場次、年資）
+  怎麼做：每位數字是 .stat-digit{height:1em;overflow:hidden} 裡一條 30 格滾輪（0–9 三輪），預設 translateY(calc(var(--end)*-1em))，--end=20+數字；進畫面（threshold .25）先 data-motion=ready（歸零）、兩個 frame 後 running，transition:transform 1s cubic-bezier(.16,1,.3,1)，延遲 --stat*70ms+--pos*45ms；另放 sr-only 文字給螢幕閱讀器；reduced-motion 維持終值。
+⑩ 純 CSS 跑馬燈
+  適合用在哪：A 個人品牌＝媒體報導名稱／合作單位牆；B 課程活動＝學員心得一句話牆或合作單位牆
+  怎麼做：內容複製兩份、width:max-content，animation:18s linear infinite paused 到 translateX(-50%)；進畫面改 running，hover 暫停，reduced-motion 關閉。
+⑪ 文字升起
+  適合用在哪：兩種都適合。每個區塊的大標題、金句一句一句從下面升起。
+  怎麼做：初始 opacity:0;clip-path:inset(0 0 100%);transform:translateY(28px)，進畫面加 .in。IntersectionObserver 門檻必須設 0（被裁光時 ratio=0，設別的門檻永遠不觸發），用 rootMargin 控制觸發位置；程式沒跑到時文字要照樣看得到（例如 <html> 加上 js 類別後才套用初始隱藏）。
+⑫ 頁面簾幕轉場
+  適合用在哪：兩種都適合。這是單頁網站，所以用在「點頂部導覽跳到某個區塊」時：品牌色簾幕蓋上 → 跳到該區塊 → 簾幕升走。
+  怎麼做：Web Animations API，蓋上 translateY(100%→0) 460ms、離開 0→-100% 500ms，cubic-bezier(.645,.045,.355,1)，用遞增 token 擋快速連點。
+⑬ 取景器開場
+  適合用在哪：A 個人品牌＝主角的名字／標誌；B 課程活動＝課程名稱。打開網頁時 2～3 秒的品牌開場。
+  怎麼做：純 CSS keyframes 依序播取景框、對焦（1.1→1 倍、文字 blur 22px→0）、鎖定脈衝（.55→3.8 倍淡出）、快門閃（透明度 0→.16→0）、簾幕升起；sessionStorage 記只看一次；右下角「跳過」按鈕；reduced-motion 不播。
+⑭ 圖片清單防跳版
+  適合用在哪：兩種都要，所有圖片（尤其照片牆、媒體牆）。
+  怎麼做：做一個圖片清單 {路徑:{c:主色,w,h}}，用 w/h 設 aspect-ratio、主色當底色，圖載入後淡入，加 loading="lazy" decoding="async"，整頁不會往下跳。
+
+⑮ 活動行事曆
+  適合用在哪：A 個人品牌＝本人有兩場以上日期明確的活動／場次時才放（放在「專長」或「生活事蹟」旁邊）；B 課程活動＝多場次課程放在「場次與票價」，單一場次就不放。不放時，使用表要寫「單一場次，不適用」。
+  怎麼做：資料直接用場次清單 [{date:'YYYY-MM-DD',title,url}]，不另外維護月曆。new Date(y,m,1).getDay() 算前面空幾格、new Date(y,m+1,0).getDate() 算天數，7 欄 grid；有活動的日子加底色＋底部 5px 小點，今天另外加外框；‹ › 切換月份（要處理跨年）。點日期（不要只做 hover，手機沒有 hover）在下方顯示活動名稱與「去報名」連結，同一天多場全部列出。
+⑯ 篩選記在網址＋熱門標籤自動長出
+  適合用在哪：兩種都要，只要有「可分類篩選」的區塊（A 的媒體牆、照片牆；B 的學員心得牆）就用；沒有分類區塊就寫「不適用」。
+  怎麼做：標籤不手排，程式數每個標籤出現幾次，由多到少取前 12 名、單一標籤最長 15 字。點標籤用 history.replaceState 把 #tag=名稱 寫進網址，載入與 hashchange 時讀回來還原篩選。旁邊放「分享」鈕：先試 navigator.share（要判斷 canShare，使用者取消的 AbortError 不算錯誤），不支援就 navigator.clipboard.writeText 複製並顯示「連結已複製」。
+
+⑰ AI 客服
+  適合用在哪：只有教練明講「要 AI 客服」時才用，製作網頁的 AI 不自己決定要不要放；沒講就在使用表寫「未要求」。
+  怎麼做：網頁只放一行 <script async src="https://event.bymyway.com/static/concierge.js" data-site="站名"></script>（data-side="left" 放左下）。要先請軍師在大樹後端新增該站的設定檔，製作網頁的 AI 不用寫客服本身；做網頁時要讓網頁文字完整寫在頁面裡（客服只讀這個網頁的內容）。
+
+⑱ 會自己轉的模型圖
+  適合用在哪：A 個人品牌＝他的方法論、服務架構圖；B 課程活動＝課程架構（幾大模組、幾個步驟）。要有一張分成 4～8 塊的模型圖才用。
+  怎麼做：模型圖用一張圖片，上面疊一張同 viewBox 的 svg，每塊扇形一條 <path tabindex="0" data-i>（平常透明、選中填半透明品牌色）；旁邊放說明卡與按鈕同步切換。IntersectionObserver（threshold .3）看得到才 setInterval 每 4 秒換一塊，下方 3px 進度線 animation 4s linear（換塊時設 animation='none'、讀一次 offsetWidth 再清空讓它重跑）；使用者點選或滑過（只在 matchMedia('(hover:hover)') 時）就停止自動、改手動。reduced-motion 不自動轉。
+⑲ 段落導覽自動長出＋回到頂端
+  適合用在哪：內容超過 5 個區塊的長頁面（個人品牌頁、課程頁幾乎都適用）。
+  怎麼做：程式讀每個 section 的 data-nav（沒有就取 h2 第一個標點前的字，最長 8～10 字），超過 6 段平均挑 6 個；右側固定一排 8px 小圓點，目前段落（頂端過了視窗 35% 高的最後一段）拉長成 8×22px 品牌色；滑過顯示段落名，點擊 scrollTo(段落頂端-頂部列高度, smooth)。捲過 500px 右下顯示「↑ 回到頂端」。寬度 900px 以下隱藏圓點。
+⑳ 頁首細線動畫（星點連線／等高線／地平線）
+  適合用在哪：深色頁首、深色區塊背景；想要科技感但不要 ⑦ 那麼重時用。
+  怎麼做：<canvas data-fx="net|contour|horizon">，一個 requestAnimationFrame 迴圈畫全部，IntersectionObserver 看不到的跳過，裝置像素比最多 2，固定亂數種子 sd=(sd*9301+49297)%233280。net＝46 點緩慢漂、距離 <150px 連線（透明度 .55×(1-d/150)）；contour＝兩組各 20 條同心弧，一條接一條畫出（每條延遲 .09 秒、1.8 秒畫完）後輕輕呼吸；horizon＝9 道弧，一顆金色光點沿弧滑過。reduced-motion 只畫靜態第一格。
+㉑ 中文標題不留孤字
+  適合用在哪：每一頁都建議用（看不出特效，但標題最後一行不會只剩一兩個字）。
+  怎麼做：CSS 先加 h1,h2,h3,p{text-wrap:pretty}；再用程式補：對 main 裡的 h1～h4、p、li 找最後一個文字節點，結尾 4 個字（結尾是標點時 5 個）用 splitText 切出來包進 <span style="white-space:nowrap">；整段少於 8 字、結尾少於 2 個中文字、結尾含空白、flex／grid 容器、按鈕、選單都跳過。
+㉒ 場次過期自動變「已結束」
+  適合用在哪：有寫日期的場次表、課程卡（B 幾乎都適用；A 有活動列表時用）。日期要寫成 2026/11/28 或 2026/11/28–29。
+  怎麼做：網頁打開時用 /(\d{4})\/(\d{1,2})\/(\d{1,2})(?:[–-](\d{1,2}))?/ 解析，以最後一天 23:59:59 算結束；過期的列加 .past 變灰、狀態改「已結束」，第一個沒過期的填進「最近場次」；全部過期就加一列「新梯次即將公布」，所有報名鈕加 aria-disabled="true"、拿掉 href、文字改「新梯次即將公布」。
+
+㉓ 翻牌計數器
+  適合用在哪：要展示「累計」的真實數字（累計學員、累計場次、累計天數），而且有後端能讀到真實數字時才用；沒有真實數字就不用，不准寫假數字。
+  怎麼做：每一位數字一張牌（.flip-digit，深色底、3px 立體陰影、正中一條 1px 牌縫）；內層靜態上半張 clip-path:inset(0 0 50% 0)、下半張 inset(50% 0 0 0)，換字時臨時加兩張翻頁葉：舊字上半 rotateX(0→-90deg) 300ms、新字下半 rotateX(90deg→0) 300ms 延遲 290ms，620ms 後移除；只翻有變的那幾位，位數變了就整組重畫。用 String(n).padStart(位數,'0') 與 font-variant-numeric:tabular-nums。資料驗證（非負整數）過了才更新；另放 aria-live 文字行；reduced-motion 只換字。
+㉔ 一鍵問 GPT 的問題按鈕
+  適合用在哪：服務／課程頁有「新手怕、怕貴、怕不會」這類顧慮時（A 的服務頁、B 的報名前常見疑問）。用來取代很長的常見問題區。
+  怎麼做：每個顧慮一顆按鈕＝<a href="https://chatgpt.com/?q=" + encodeURIComponent(問題) target="_blank" rel="noopener noreferrer">；問題寫成「我的顧慮是：…／我們的官方說明：…（寫清楚事實）／請幫我評估…」，把官方說明夾進問題裡讓 AI 據實回答，不能放個資、全長 1500 字內。每顆按鈕右側疊一顆「複製」（navigator.clipboard.writeText，成功顯示「已複製」1.6 秒；失敗展開唯讀 textarea、onfocus=select()）。下方加一句：「會開啟 ChatGPT 並預填問題，可能要自己按送出。」按鈕最小高 74px。
+㉕ 第一次動手才載入重特效
+  適合用在哪：有大型動畫、3D、平滑捲動的首頁。小型特效不需要。
+  怎麼做：條件＝沒有 prefers-reduced-motion 且 matchMedia('(min-width:1025px) and (hover:hover)')；wheel、touchstart 以 {passive:true,once:true} 監聽，keydown 只認 ArrowDown／PageDown／End／空白；再用 IntersectionObserver（rootMargin:'1200px 0px'）觀察舞台。觸發時先移除全部監聽，再 await import() 動態載入，只做一次；失敗就保持靜態頁。載入前就要有完整的靜態內容。
+㉖ 依瀏覽器語言自動換語系
+  適合用在哪：只有教練要求要多語時才用，沒講就不做。
+  怎麼做：文字檔 copy={'zh-TW':{…},en:{…},ja:{…}}，元素標 data-copy／data-alt／data-aria-label；取 navigator.languages[0]（沒有再取 navigator.language）：zh-tw／zh-hk／zh-mo／zh-hant／zh-hant-* → 繁中，ja／ja-* → 日文，其餘 → 英文。同步改 html lang、document.title、6 個 meta（description、og:title、og:description、og:locale、twitter:title、twitter:description）與常見問答的 JSON-LD；HTML 先放預設語言內容。
+㉗ 下載按鈕：檢查過才亮
+  適合用在哪：B 的講義／資料包下載，A 的作品集 PDF 或軟體下載。沒有可下載的東西就不用。
+  怎麼做：下載網址先檢查：非字串或空 → 無效；以 // 開頭或含 \ → 無效；相對路徑用 new URL(值,'https://x.invalid/') 解析，origin 仍是 https://x.invalid 才通過；有協定的只接受 https:。通過＝正常按鈕；沒通過或沒設定＝aria-disabled、灰色、文字「即將推出」。點擊時 fetch(後端,{method:'POST',keepalive:true}) 記一次，後端回 {totalDownloads:數字}，驗證是非負整數才顯示「已下載 N 次」，讀不到顯示「—」。
+
+㉘ 會動的小圖示（純 SVG＋CSS）
+  適合用在哪：載入中、傳送中、已驗證、搜尋中這類小狀態；按鈕或說明卡旁。純裝飾、旁邊沒有狀態意義就不用。
+  怎麼做：每個圖示是一段 svg（viewBox 0 0 24 24、stroke="currentColor"、class="ul-i ul-名稱"），共用 CSS：.ul-i{width:var(--ul-size,24px);height:var(--ul-size,24px);stroke-width:var(--ul-stroke,1.5);overflow:visible}、.ul-i *{transform-box:view-box;transform-origin:12px 12px}；動畫時間與延遲都寫成 calc(秒數 / var(--ul-speed,1))，並加 animation-play-state:var(--ul-play,running)，所以一個變數可調速度、設 paused 就暫停。只動 transform、opacity、stroke-dashoffset。@media (prefers-reduced-motion:reduce){.ul-i *{animation:none!important}}。表達狀態加 role="img"＋aria-label，純裝飾加 aria-hidden="true"。36 個現成圖示與樣式在示範頁 https://event.bymyway.com/curated/rs-demo/ 的 ul-icons.js／ul-icons.css（MIT 授權，需保留 ul-icons-LICENSE.txt），要用就整包複製、保留授權檔。
+
+交付時附一張「特效使用表」：用了第幾招 → 放在哪個區塊。沒用的招式不用列、不用解釋。
+
+（本檔完）
