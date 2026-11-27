@@ -100,6 +100,8 @@ MUSE：https://coach1973.github.io/bigtree-web-guide/deliver-muse.txt
 
 導覽列最左邊的名字或品牌，教練希望是可點的連結，點了回到最上面：<a class="brand" id="brandTop" href="#">名字</a>（請不要只用 <span>，也不要用 href="#top" 指到固定頁首）。加程式：click 時 e.preventDefault()；window.scrollTo({top:0,behavior:"smooth"})；700 毫秒後若 window.scrollY>2 再 scrollTo({top:0,behavior:"instant"}) 補一次。交付前請捲到下面點一次，回報寫「表頭回頂已確認」。
 
+教練要求：表頭選單很多時（例如 5 個以上連結），手機版一定要有漢堡按鈕。桌機版照常顯示全部連結；手機 390 寬時，表頭只留品牌＋一個漢堡按鈕，點開才展開連結，點任一連結後自動收起。不要讓連結在手機上換行、佔掉半個畫面。交付前用手機版親眼看一次：沒點開時表頭只有一行，點開後連結全看得到、點了會收起。
+
 
 1. 本網頁由 ○○ AI 製作（誰做的寫誰，寫法見交付檔）
 2. 出品人 大樹教練（連結：https://www.bymyway.com/）
